@@ -37,6 +37,15 @@ if($show_header_and_footer == "1"){
 /*- Scriptstart ----------------------------------------------------------- */
 echo"
 
+<form method=\"POST\" action=\"#uploader\" enctype=\"multipart/form-data\">
+
+<p><img src=\"_gfx/icons/18x18/image_outline_black_18dp.png\" alt=\"image_outline_black_18dp.png\" />
+<input name=\"inp_image\" type=\"file\" tabindex=\"1\" />
+<input type=\"image\" src=\"_gfx/icons/18x18/file_upload_outline_black_18dp.png\" border=\"0\" alt=\"Submit\" tabindex=\"2\" />
+
+</p>
+
+</form>
 ";
 
 
