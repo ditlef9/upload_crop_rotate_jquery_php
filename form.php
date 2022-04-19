@@ -29,8 +29,7 @@ if($show_header_and_footer == "1"){
 	echo"	<link rel=\"icon\" href=\"_gfx/favicon/ucrjphp_favicon_16x16.png\" type=\"image/png\" sizes=\"16x16\" />\n";
 	echo"	<link rel=\"icon\" href=\"_gfx/favicon/ucrjphp_favicon_32x32.png\" type=\"image/png\" sizes=\"32x32\" />\n";
 	echo"	<link rel=\"icon\" href=\"_gfx/favicon/ucrjphp_favicon_260x260.png\" type=\"image/png\" sizes=\"260x260\" />\n";
-	$size = filesize("_gfx/file_uploader.css");
-	echo"	<link rel=\"stylesheet\" href=\"_gfx/file_uploader.css?size=$size\" type=\"text/css\" >\n";
+	echo"	<link rel=\"stylesheet\" href=\"_gfx/file_uploader.css?size="; echo filesize("_gfx/file_uploader.css"); echo"\" type=\"text/css\" >\n";
 	echo"	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
 	echo"	<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0;\"/>\n";
 	echo"	<script type=\"text/javascript\" src=\"$jquery_file\"></script>\n";
@@ -141,14 +140,18 @@ $(document).ready(function(){
 
            	// ajax call
 		var imagePath = $(\".ucrjphp_image_preview img\").attr('src');
-		var n = imagePath.lastIndexOf('/');
-		var imageSrc = imagePath.substring(n + 1);
+		var lastIndexOf = imagePath.lastIndexOf('/');
+		var imageSrc = imagePath.substring(lastIndexOf + 1);
+
+
+		var imageCounter = imagePath.substring(lastIndexOf - 1);
+		var imageCounter = imagePath.split('/').reverse()[1];
 		
 		var imageVersion = \$('[name=\"inp_ucrjphp_image_version\"]').val();
 
 
-		console.log('Rotate 90deg ' + imageSrc + ' version= ' + imageVersion);
-		var data = 'tool=rotate&deg=90&image_src='+ imageSrc + '&image_ver=' + imageVersion;
+		console.log('Rotate 90deg imagePhat=' + imagePath + ' imageCounter =' + imageCounter + ' src=' + imageSrc + ' version=' + imageVersion);
+		var data = 'tool=rotate&deg=90&image_counter=' + imageCounter + '&image_src='+ imageSrc + '&image_ver=' + imageVersion;
             	\$.ajax({
                 	type: \"GET\",
                		url: \"tools.php\",
@@ -157,8 +160,12 @@ $(document).ready(function(){
 				
 			},
                		success: function(html){
-				\$(\"#ucrjphp_upload_feedback\").html(html);
-				\$(\"#ucrjphp_upload_feedback\").children().delay(5000).fadeOut(800);
+				// Feedback
+				\$(\"#ucrjphp_upload_feedback\").html(\"<div class='success_small'><p>Rotated 90 deg (\" + html + \")</p></div>\");
+				\$(\"#ucrjphp_upload_feedback\").children().delay(20000).fadeOut(800);
+
+				// Display image
+                    		\$(\"#ucrjphp_img\").attr(\"src\", html); 
               		}
             	});
 	}); // Rotate 90

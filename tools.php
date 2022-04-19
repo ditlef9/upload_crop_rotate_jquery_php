@@ -34,6 +34,22 @@ else{
 	die;
 }
 
+if(isset($_GET['image_counter'])){
+	$image_counter = $_GET['image_counter'];
+	$image_counter = strip_tags(stripslashes($image_counter));
+	if(!(is_numeric($image_counter))){
+		echo"<div class=\"info_error\"><p>image_counter not numeric</p></div>";
+		die;
+	}
+	if(!(is_dir("$upload_path/ucrjphp/$image_counter"))){
+		echo"<div class=\"info_error\"><p>image_counter not directory</p></div>";
+		die;
+	}
+}
+else{
+	echo"<div class=\"info_error\"><p>Missing image_dir</p></div>";
+	die;
+}
 if(isset($_GET['image_src'])){
 	$image_src = $_GET['image_src'];
 	$image_src = strip_tags(stripslashes($image_src));
@@ -43,13 +59,13 @@ if(isset($_GET['image_src'])){
 	}
 
 	// Check that file exists
-	if(!(file_exists("$upload_path/$image_src"))){
-		echo"<div class=\"info_error\"><p>Image not found</p></div>";
+	if(!(file_exists("$upload_path/ucrjphp/$image_counter/$image_src"))){
+		echo"<div class=\"info_error\"><p>Image not found (<a href=\"$upload_path/ucrjphp/$image_counter/$image_src\">$upload_path/ucrjphp/$image_counter/$image_src</a>)</p></div>";
 		die;
 	}
 
 	// Check file date
-	$last_modified = filemtime("$upload_path/$image_src");
+	$last_modified = filemtime("$upload_path/ucrjphp/$image_counter/$image_src");
 	$diff = $time - $last_modified;
 	if($diff > "43200"){
 		echo"<div class=\"info_error\"><p>Image has been locked because it is has not been modified for over 12 hours</p></div>";
@@ -57,7 +73,7 @@ if(isset($_GET['image_src'])){
 	}
 
 	// Check that this is a image
-	$imagesize = getimagesize("$upload_path/$image_src");
+	$imagesize = getimagesize("$upload_path/ucrjphp/$image_counter/$image_src");
 	if($imagesize[0] == "" OR $imagesize[1] == ""){
 		echo"<div class=\"info_error\"><p>Not a image</p></div>";
 		die;
@@ -80,7 +96,6 @@ else{
 	echo"<div class=\"info_error\"><p>Missing image_ver</p></div>";
 	die;
 }
-$next_image_version = $image_ver+1;
 
 /*- Upload file ------------------------------------------------------------ */
 if($tool == "rotate"){
@@ -98,25 +113,30 @@ if($tool == "rotate"){
 		die;
 	}
 
-
-	// Versions
+	// EXT
 	$ext = get_extension($image_src);
-	$image_src_without_ext = str_replace("$ext", "", $image_src);
-	$image_src_tmp = $image_src_without_ext . "_" . $next_image_version . ".$ext";
+
+	// Delete old original
+	unlink("$upload_path/ucrjphp/$image_counter/$image_src");
+
+	// Names
+	$image_src_without_ext = str_replace(".$ext", "", $image_src);
+	$new_version = $image_ver+1;
+	$new_image_name_version	 = $image_src_without_ext . "_" . $new_version . ".$ext";
 
 	if($ext == "jpg"){
-		// Load
-		$source = imagecreatefromjpeg("$upload_path/$image_src");
+		// Load (cache file)
+		$source = imagecreatefromjpeg("$cache_path/ucrjphp_tmp/$image_counter/$image_src");
 
 		// Rotate
 		$rotate = imagerotate($source, $deg, 0);
 
-		// Save
-		imagejpeg($rotate, "$upload_path/$image_src");
+		// Save to original
+		imagejpeg($rotate, "$upload_path/ucrjphp/$image_counter/$new_image_name_version");
 	}
 	elseif($ext == "png"){
 		// Load
-		$source = imagecreatefrompng("$upload_path/$image_src");
+		$source = imagecreatefrompng("$cache_path/ucrjphp_tmp/$image_counter/$image_src");
 
 		// Bg
 		$bgColor = imagecolorallocatealpha($source, 255, 255, 255, 127);
@@ -124,9 +144,9 @@ if($tool == "rotate"){
 		// Rotate
 		$rotate = imagerotate($source, $deg, $bgColor);
 	
-		// Save
+		// Save to original
 		imagesavealpha($rotate, true);
-		imagepng($rotate, "$upload_path/$image_src");
+		imagepng($rotate, "$upload_path/ucrjphp/$image_counter/$new_image_name_version");
 	}
 	else{
 		echo"Unknown extension";
@@ -136,6 +156,15 @@ if($tool == "rotate"){
 	// Free the memory
 	imagedestroy($source);
 
+	// Copy original to new version
+	copy("$upload_path/ucrjphp/$image_counter/$image_src", "$cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version");
+
+	// Give feedback
+	echo"Ext: $ext<br />
+	Original: $upload_path/ucrjphp/$image_counter/$image_src<br />
+	New original: $upload_path/ucrjphp/$image_counter/$new_image_name_version<br />
+	Temp: $cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version ";
+	echo"$upload_path/ucrjphp/$image_counter/$new_image_name_version";
 
 } // rotate
 else{

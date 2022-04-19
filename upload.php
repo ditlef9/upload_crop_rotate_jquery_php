@@ -30,17 +30,41 @@ if(isset($_FILES['file']['name'])){
 	if(!(is_dir("$cache_path"))){
 		mkdir("$cache_path");
 	}
+	if(!(is_dir("$cache_path/ucrjphp_tmp"))){
+		mkdir("$cache_path/ucrjphp_tmp");
+	}
 	if(!(is_dir("$upload_path"))){
 		mkdir("$upload_path");
+	}
+	if(!(is_dir("$upload_path/ucrjphp"))){
+		mkdir("$upload_path/ucrjphp");
+	}
+
+	// Counter
+	$counter = 0;
+	if(file_exists("$cache_path/ucrjphp_tmp/counter.txt")){
+		$myfile = fopen("$cache_path/ucrjphp_tmp/counter.txt", "r") or die("Unable to open file!");
+		$counter = fread($myfile,filesize("$cache_path/ucrjphp_tmp/counter.txt"));
+		fclose($myfile);
+	}
+	$counter++;
+	$myfile = fopen("$cache_path/ucrjphp_tmp/counter.txt", "w") or die("Unable to open file!");
+	fwrite($myfile, $counter);
+	fclose($myfile);
+
+	if(!(is_dir("$cache_path/ucrjphp_tmp/$counter"))){
+		mkdir("$cache_path/ucrjphp_tmp/$counter");
+	}
+	if(!(is_dir("$upload_path/ucrjphp/$counter"))){
+		mkdir("$upload_path/ucrjphp/$counter");
 	}
 
 	// Getting file name
 	$filename = stripslashes($_FILES['file']['name']);
-	$datetime_clean = date("ymdhis");
 
 	// Location
-	$uploaded_file_tmp 	= "$cache_path/ucrjphp_". $datetime_clean . "_" . $filename;
-	$uploaded_file_target 	= "$upload_path/ucrjphp_". $datetime_clean . "_" . $filename;
+	$uploaded_file_tmp 	= "$cache_path/ucrjphp_tmp/$counter/" . $filename;
+	$uploaded_file_target 	= "$upload_path/ucrjphp/$counter/" . $filename;
 
 	$image_file_type = pathinfo($uploaded_file_tmp, PATHINFO_EXTENSION);
 	$image_file_type = strtolower($image_file_type);
