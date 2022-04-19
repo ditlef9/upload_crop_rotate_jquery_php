@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* File: upload_image_uploader.php
+* File: upload.php
 * Version 1.0
 * Date 17:56 13.04.2022
 * Copyright (c) 2022 Sindre Andre Ditlefsen
@@ -9,16 +9,17 @@
 *
 */
 
-/*- Settings -------------------------------------------------------------- */
+/*- Upload Settings --------------------------------------------------------- */
 // Paths
 $cache_path = "_cache";
 $upload_path = "_uploads";
-$jquery_file = "_javascripts/jquery/jquery.min.js";
-$ucrjp_file = "_javascripts/upload_crop_rotate_jquery_php/upload_crop_rotate_jquery_php.js";
 
-// Config
-$show_header_and_footer = "1";
+// Image config
+$max_temp_width = "5000";
+$max_temp_height = "5000";
 
+/*- Functions -------------------------------------------------------------- */
+include("_functions/resize_crop_image.php");
 
 /*- Upload file ------------------------------------------------------------ */
 
@@ -33,27 +34,57 @@ if(isset($_FILES['file']['name'])){
 		mkdir("$upload_path");
 	}
 
-	/* Getting file name */
-	$filename = $_FILES['file']['name'];
+	// Getting file name
+	$filename = stripslashes($_FILES['file']['name']);
+	$datetime_clean = date("ymdhis");
 
-	/* Location */
-	$location = "$cache_path/".$filename;
-	$imageFileType = pathinfo($location,PATHINFO_EXTENSION);
-	$imageFileType = strtolower($imageFileType);
+	// Location
+	$uploaded_file_tmp 	= "$cache_path/ucrjphp_". $datetime_clean . "_" . $filename;
+	$uploaded_file_target 	= "$upload_path/ucrjphp_". $datetime_clean . "_" . $filename;
 
-	/* Valid extensions */
-	$valid_extensions = array("jpg","jpeg","png");
+	$image_file_type = pathinfo($uploaded_file_tmp, PATHINFO_EXTENSION);
+	$image_file_type = strtolower($image_file_type);
+
+	// Valid extensions
+	$valid_extensions = array("jpg", "jpeg", "png");
 
 	// Feedback
 	$fm_image = "?";
 	$ft_image = "";
 
-	/* Check file extension */
-	if(in_array(strtolower($imageFileType), $valid_extensions)) {
-      	/* Upload file */
-		if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
-			echo"1$location";
-			exit;
+	// Check file extension
+	if(in_array(strtolower($image_file_type), $valid_extensions)) {
+		// Upload file
+		if(move_uploaded_file($_FILES['file']['tmp_name'], $uploaded_file_tmp)){
+
+			// Get image size
+			$file_size = filesize($uploaded_file_tmp);
+						
+			// Check with and height
+			list($width,$height) = getimagesize($uploaded_file_tmp);
+		
+			if($width == "" OR $height == ""){
+				$ft_image = "warning";
+				$fm_image = "getimagesize_failed";
+				unlink($uploaded_file);
+				echo"<div class=\"$fm_image\"><p>$ft_image</p></div>";
+
+			}
+			else{
+				// Resize to tmp max width and height
+				if($width > $max_temp_width OR $height > $max_temp_height){
+					resize_crop_image($max_temp_width, $max_temp_height, $uploaded_file_tmp, $uploaded_file_tmp, $quality = 80);
+				}
+
+				// Copy to target
+				copy($uploaded_file_tmp, $uploaded_file_target);
+
+				// Give feedback
+				echo"1$uploaded_file_tmp";
+
+			
+				exit;
+			} // width and height ok
 		}
 		else{ // move uploaded file
 			switch ($_FILES["$inp_names_array[$x]"]['error']) {
@@ -77,16 +108,15 @@ if(isset($_FILES['file']['name'])){
       				$fm_image = "unknown_error";
 					$ft_image = "info_small";
 					break;
-			} // switch	
-		}
-	
-
-	}
-	echo"<div class=\"$fm_image\"><p>$ft_image</p></div>";
-	exit;
+			} // switch
+			echo"<div class=\"$fm_image\"><p>$ft_image</p></div>";
+			exit;
+		} // move uploaded file failed
+	} // valid extension
 }
-
-echo"<div class=\"info_small\"><p>No image selected</p></div>";
+else{
+	echo"<div class=\"info_small\"><p>No image selected</p></div>";
+}
 
 
 ?>

@@ -1,63 +1,58 @@
+/*- Body -------------------------------------------------------------------------- */
+html,body {
+	margin: 10px 10px 10px 10px;
+	padding:0;
+}
+body {
+	background: #fff; 
+	color: #000;
+	font: normal 16px 'Open Sans', sans-serif;
+}
+
+
 
 /*- Feedback boxes ------------------------------------------------------------------------- */
 .info_small, .success_small, .warning_small, .error_small, .validation_small {
 	border: 1px solid;
 	margin: 10px 0px;
-	padding: 7px 5px 7px 20px;
+	padding: 10px 0px 10px 34px;
 	background-repeat: no-repeat;
 	background-position: 10px center;
 }
-.info {
+.info_small > p, .success_small > p, .warning_small > p, .error_small > p, .validation_small > p {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+}
+.info_small {
 	color: #00529B;
 	background-color: #BDE5F8;
-	background-image: url("gfx/icons/18x18/dialog-information.png");
+	background-image: url("icons/18x18/info_outline_black_18x18.png");
 }
-.success {
+.success_small {
 	color: #4F8A10;
 	background-color: #DFF2BF;
-	background-image:url("gfx/icons/18x18/dialog-information.png");
+	background-image:url("icons/18x18/done_outline_black_18x18.png");
 }
-.warning {
+.warning_small {
 	color: #9F6000;
 	background-color: #FEEFB3;
-	background-image: url("gfx/icons/18x18/dialog-warning.png");
+	background-image: url("icons/18x18/announcement_outline_black_18x18.png");
 }
-.error {
+.error_small {
 	color: #D8000C;
 	background-color: #FFBABA;
-	background-image: url("gfx/icons/18x18/dialog-error.png");
+	background-image: url("icons/18x18/report_gmailerrorred_outline_black_18x18.png");
 }
 
 
 
+/*- ucrjphp (Upload Crop Rotate jQuery PHP) ------------------------------------------------ */
+div.ucrjphp_image_tools{
+	display: none;
+}
+div.ucrjphp_image_preview{
+	display: none;
+}
+div.ucrjphp_upload_form{
 
-/* Container */
-.container{
-   margin: 0 auto;
-   border: 0px solid black;
-   width: 50%;
-   height: 250px;
-   border-radius: 3px;
-   background-color: ghostwhite;
-   text-align: center;
-}
-/* Preview */
-.preview{
-   width: 100px;
-   height: 100px;
-   border: 1px solid black;
-   margin: 0 auto;
-   background: white;
-}
-
-.preview img{
-   display: none;
-}
-/* Button */
-.button{
-   border: 0px;
-   background-color: deepskyblue;
-   color: white;
-   padding: 5px 15px;
-   margin-left: 10px;
 }
