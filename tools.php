@@ -120,7 +120,7 @@ if($tool == "rotate"){
 	unlink("$upload_path/ucrjphp/$image_counter/$image_src");
 
 	// Names
-	$image_src_without_ext = str_replace(".$ext", "", $image_src);
+	$image_src_without_ext = str_replace("_$image_ver.$ext", "", $image_src);
 	$new_version = $image_ver+1;
 	$new_image_name_version	 = $image_src_without_ext . "_" . $new_version . ".$ext";
 
@@ -128,8 +128,11 @@ if($tool == "rotate"){
 		// Load (cache file)
 		$source = imagecreatefromjpeg("$cache_path/ucrjphp_tmp/$image_counter/$image_src");
 
+		// Bg
+		$bgColor = imagecolorallocatealpha($source, 255, 255, 255, 127);
+
 		// Rotate
-		$rotate = imagerotate($source, $deg, 0);
+		$rotate = imagerotate($source, $deg, $bgColor);
 
 		// Save to original
 		imagejpeg($rotate, "$upload_path/ucrjphp/$image_counter/$new_image_name_version");
@@ -157,13 +160,13 @@ if($tool == "rotate"){
 	imagedestroy($source);
 
 	// Copy original to new version
-	copy("$upload_path/ucrjphp/$image_counter/$image_src", "$cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version");
+	copy("$upload_path/ucrjphp/$image_counter/$new_image_name_version", "$cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version");
 
 	// Give feedback
-	echo"Ext: $ext<br />
-	Original: $upload_path/ucrjphp/$image_counter/$image_src<br />
-	New original: $upload_path/ucrjphp/$image_counter/$new_image_name_version<br />
-	Temp: $cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version ";
+	// echo"Ext: $ext<br />
+	// Original: $upload_path/ucrjphp/$image_counter/$image_src<br />
+	// New original: $upload_path/ucrjphp/$image_counter/$new_image_name_version<br />
+	// Temp: $cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version ";
 	echo"$upload_path/ucrjphp/$image_counter/$new_image_name_version";
 
 } // rotate

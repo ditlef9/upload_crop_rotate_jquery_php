@@ -20,6 +20,7 @@ $max_temp_height = "5000";
 
 /*- Functions -------------------------------------------------------------- */
 include("_functions/resize_crop_image.php");
+include("_functions/get_extension.php");
 
 /*- Upload file ------------------------------------------------------------ */
 
@@ -61,10 +62,12 @@ if(isset($_FILES['file']['name'])){
 
 	// Getting file name
 	$filename = stripslashes($_FILES['file']['name']);
+	$ext = get_extension($filename);
+	$filename_without_ext = str_replace(".$ext", "", $filename);
 
 	// Location
-	$uploaded_file_tmp 	= "$cache_path/ucrjphp_tmp/$counter/" . $filename;
-	$uploaded_file_target 	= "$upload_path/ucrjphp/$counter/" . $filename;
+	$uploaded_file_tmp 	= "$cache_path/ucrjphp_tmp/$counter/" . $filename_without_ext . "_0." . $ext;
+	$uploaded_file_target 	= "$upload_path/ucrjphp/$counter/" . $filename_without_ext . "_0." . $ext;
 
 	$image_file_type = pathinfo($uploaded_file_tmp, PATHINFO_EXTENSION);
 	$image_file_type = strtolower($image_file_type);

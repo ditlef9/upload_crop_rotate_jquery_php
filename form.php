@@ -49,12 +49,13 @@ echo"
 
 		<div class=\"ucrjphp_image_tools\">
 			<p>
-			<a href=\"#\" id=\"rotate_right_ninety\"><img src=\"_gfx/icons/24x24/rotate_right_outline_black_24x24.svg\" alt=\"rotate_right_outline_black_24x24.png\" title=\"Roate 90&deg; right\" /></a>
-			<a href=\"#\" id=\"rotate_left_ninety\"><img src=\"_gfx/icons/24x24/rotate_left_outline_black_24x24.png\" alt=\"rotate_left_outline_black_24x24.png\" title=\"Roate 90&deg; left\" /></a>
-			<a href=\"#\" id=\"rotate_right_one\"><img src=\"_gfx/icons/24x24/rotate_right_one_outline_black_24x24.png\" alt=\"rotate_right_one_outline_black_24x24.png\" title=\"Roate 1&deg; right\" /></a>
-			<a href=\"#\" id=\"rotate_left_one\"><img src=\"_gfx/icons/24x24/rotate_left_one_outline_black_24x24.png\" alt=\"rotate_left_one_outline_black_24x24.png\" title=\"Roate 1&deg; left\" /></a>
+			<a href=\"#\" class=\"ucrjphp_rotate\" data-deg=\"-90\"><img src=\"_gfx/icons/24x24/rotate_right_outline_black_24x24.svg\" alt=\"rotate_right_outline_black_24x24.png\" title=\"Roate 90&deg; right\" /></a>
+			<a href=\"#\" class=\"ucrjphp_rotate\" data-deg=\"90\"><img src=\"_gfx/icons/24x24/rotate_left_outline_black_24x24.png\" alt=\"rotate_left_outline_black_24x24.png\" title=\"Roate 90&deg; left\" /></a>
+			<a href=\"#\" class=\"ucrjphp_rotate\" data-deg=\"-1\"><img src=\"_gfx/icons/24x24/rotate_right_one_outline_black_24x24.png\" alt=\"rotate_right_one_outline_black_24x24.png\" title=\"Roate 1&deg; right\" /></a>
+			<a href=\"#\" class=\"ucrjphp_rotate\" data-deg=\"1\"><img src=\"_gfx/icons/24x24/rotate_left_one_outline_black_24x24.png\" alt=\"rotate_left_one_outline_black_24x24.png\" title=\"Roate 1&deg; left\" /></a>
 			<a href=\"#\" id=\"crop\"><img src=\"_gfx/icons/24x24/crop_outline_black_24x24.png\" alt=\"crop_outline_black_24x24.png\" title=\"Crop\" /></a>
 			
+			<input type=\"text\" name=\"inp_ucrjphp_image_version\" value=\"0\" size=\"1\" autocomplete=\"false\" />
 			</p>
 		</div>
 
@@ -67,7 +68,6 @@ echo"
 		<div class=\"ucrjphp_upload_form\">
             		<p>
 			<input type=\"file\" id=\"file\" name=\"file\" />
-			<input type=\"hidden\" id=\"ucrjphp_image_version\" name=\"inp_ucrjphp_image_version\" value=\"0\" />
             		<input type=\"button\" class=\"button\" value=\"Upload\" id=\"ucrjphp_but_upload\">
             		</p>
 		</div>
@@ -111,9 +111,13 @@ $(document).ready(function(){
 					// Display image
                     			\$(\".ucrjphp_image_preview img\").show(); // Display image element
 					\$(\".ucrjphp_image_preview\").show();
+					\$('.ucrjphp_image_preview img').attr('title', uploadedImageSrc); 
+					\$('.ucrjphp_image_preview img').attr('alt', uploadedImageSrc); 
+
 
 					// Display tools
 					\$(\".ucrjphp_image_tools\").show();
+				\$('[name=\"inp_ucrjphp_image_version\"]').val(0);
 
 					// Hide upload form
 					\$(\"#ucrjphp_upload_form\").children().delay(5000).fadeOut(800);
@@ -133,9 +137,12 @@ $(document).ready(function(){
 	}); // Upload
 
 
-	$(\"#rotate_right_ninety\").click(function(){
+	$(\".ucrjphp_rotate\").click(function(){
+		// Get degree
+		var deg = \$(this).attr(\"data-deg\");
+
 		// Feedback :: Loading
-		\$(\"#ucrjphp_upload_feedback\").html(\"<div class='info_small'><p><img src='_gfx/icons/18x18/spinner_black_18x18.png' alt='spinner_black_18x18.png' /> Rotating right 90&deg;...</p></div>\");
+		\$(\"#ucrjphp_upload_feedback\").html(\"<div class='info_small'><p><img src='_gfx/icons/18x18/spinner_black_18x18.png' alt='spinner_black_18x18.png' /> Rotating \" + deg  + \"&deg;...</p></div>\");
 		\$(\"#ucrjphp_upload_feedback\").children().fadeIn(800);
 
            	// ajax call
@@ -147,11 +154,12 @@ $(document).ready(function(){
 		var imageCounter = imagePath.substring(lastIndexOf - 1);
 		var imageCounter = imagePath.split('/').reverse()[1];
 		
-		var imageVersion = \$('[name=\"inp_ucrjphp_image_version\"]').val();
-
+		var imageVersion = parseInt(\$('[name=\"inp_ucrjphp_image_version\"]').val());
+		var newImageVersion = imageVersion+1;
+		\$('[name=\"inp_ucrjphp_image_version\"]').val(newImageVersion);
 
 		console.log('Rotate 90deg imagePhat=' + imagePath + ' imageCounter =' + imageCounter + ' src=' + imageSrc + ' version=' + imageVersion);
-		var data = 'tool=rotate&deg=90&image_counter=' + imageCounter + '&image_src='+ imageSrc + '&image_ver=' + imageVersion;
+		var data = 'tool=rotate&deg=' + deg + '&image_counter=' + imageCounter + '&image_src='+ imageSrc + '&image_ver=' + imageVersion;
             	\$.ajax({
                 	type: \"GET\",
                		url: \"tools.php\",
@@ -161,11 +169,13 @@ $(document).ready(function(){
 			},
                		success: function(html){
 				// Feedback
-				\$(\"#ucrjphp_upload_feedback\").html(\"<div class='success_small'><p>Rotated 90 deg (\" + html + \")</p></div>\");
+				\$(\"#ucrjphp_upload_feedback\").html(\"<div class='success_small'><p>Rotated \" + deg  + \"&deg; (\" + html + \")</p></div>\");
 				\$(\"#ucrjphp_upload_feedback\").children().delay(20000).fadeOut(800);
 
 				// Display image
                     		\$(\"#ucrjphp_img\").attr(\"src\", html); 
+				\$('.ucrjphp_image_preview img').attr('title', html);
+				\$('.ucrjphp_image_preview img').attr('alt', html);
               		}
             	});
 	}); // Rotate 90
