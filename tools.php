@@ -170,10 +170,122 @@ if($tool == "rotate"){
 	echo"$upload_path/ucrjphp/$image_counter/$new_image_name_version";
 
 } // rotate
+elseif($tool == "load_image"){
+	echo"$upload_path/ucrjphp/$image_counter/$image_src";
+} // load image
+elseif($tool == "crop"){
+
+	if(isset($_GET['x'])){
+		$x = $_GET['x'];
+		$x = strip_tags(stripslashes($x));
+		if(!(is_numeric($x))){
+			echo"<div class=\"info_error\"><p>x not numeric</p></div>";
+			die;
+		}
+	}
+	else{
+		echo"<div class=\"info_error\"><p>Missing x</p></div>";
+		die;
+	}
+
+	if(isset($_GET['y'])){
+		$y = $_GET['y'];
+		$y = strip_tags(stripslashes($y));
+		if(!(is_numeric($y))){
+			echo"<div class=\"info_error\"><p>y not numeric</p></div>";
+			die;
+		}
+	}
+	else{
+		echo"<div class=\"info_error\"><p>Missing y</p></div>";
+		die;
+	}
+
+	if(isset($_GET['width'])){
+		$width = $_GET['width'];
+		$width = strip_tags(stripslashes($width));
+		if(!(is_numeric($width))){
+			echo"<div class=\"info_error\"><p>width not numeric</p></div>";
+			die;
+		}
+	}
+	else{
+		echo"<div class=\"info_error\"><p>Missing width</p></div>";
+		die;
+	}
+
+	if(isset($_GET['height'])){
+		$height = $_GET['height'];
+		$height = strip_tags(stripslashes($height));
+		if(!(is_numeric($height))){
+			echo"<div class=\"info_error\"><p>height not numeric</p></div>";
+			die;
+		}
+	}
+	else{
+		echo"<div class=\"info_error\"><p>Missing height</p></div>";
+		die;
+	}
+
+
+	// EXT
+	$ext = get_extension($image_src);
+
+
+	// Names
+	$image_src_without_ext = str_replace("_$image_ver.$ext", "", $image_src);
+	$new_version = $image_ver+1;
+	$new_image_name_version	 = $image_src_without_ext . "_" . $new_version . ".$ext";
+
+	if($ext == "jpg"){
+		// Load (cache file)
+		$im = imagecreatefromjpeg("$cache_path/ucrjphp_tmp/$image_counter/$image_src");
+
+		// Size
+		$size = min(imagesx($im), imagesy($im));
+
+		// Crop
+		$im2 = imagecrop($im, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
+
+		// Save to original
+		imagejpeg($im2, "$upload_path/ucrjphp/$image_counter/$new_image_name_version");
+	}
+	elseif($ext == "png"){
+		// Load
+		$source = imagecreatefrompng("$cache_path/ucrjphp_tmp/$image_counter/$image_src");
+
+
+		// Size
+		$size = min(imagesx($im), imagesy($im));
+
+		// Crop
+		$im2 = imagecrop($im, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
+	
+		// Save to original
+		imagesavealpha($im2, true);
+		imagepng($im2, "$upload_path/ucrjphp/$image_counter/$new_image_name_version");
+	}
+	else{
+		echo"Unknown extension";
+		die;
+	}
+		
+	// Free the memory
+	imagedestroy($im);
+
+
+	// Copy original to new version
+	copy("$upload_path/ucrjphp/$image_counter/$new_image_name_version", "$cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version");
+
+	// Give feedback
+	// echo"Ext: $ext<br />
+	// Original: $upload_path/ucrjphp/$image_counter/$image_src<br />
+	// New original: $upload_path/ucrjphp/$image_counter/$new_image_name_version<br />
+	// Temp: $cache_path/ucrjphp_tmp/$image_counter/$new_image_name_version ";
+	echo"$upload_path/ucrjphp/$image_counter/$new_image_name_version";
+} // crop
 else{
-
+	echo"Please select a tool!";
 }
-
-
 
 ?>
