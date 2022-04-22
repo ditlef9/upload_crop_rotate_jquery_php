@@ -18,6 +18,7 @@ body {
 	padding: 10px 0px 10px 34px;
 	background-repeat: no-repeat;
 	background-position: 10px center;
+	text-align: left;
 }
 .info_small > p, .success_small > p, .warning_small > p, .error_small > p, .validation_small > p {
 	margin: 0px 0px 0px 0px;
@@ -47,12 +48,45 @@ body {
 
 
 /*- ucrjphp (Upload Crop Rotate jQuery PHP) ------------------------------------------------ */
+div.ucrjphp_wrapper{
+	text-align:center;
+}
 div.ucrjphp_image_tools{
 	display: none;
+}
+div.ucrjphp_image_tools_info > p{
+	color: grey;
+	font-size: 90%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+div.ucrjphp_image_tools_info > p > input{
+	color: grey;
+	font-size: 90%;
+	border: #fff 0px solid;
+	border-bottom: grey 1px dashed;
 }
 div.ucrjphp_image_preview{
 	display: none;
 }
 div.ucrjphp_upload_form{
 
+}
+div.ucrjphp_finish{
+	display: none;
+}
+div.ucrjphp_finish > p > input{
+	background: #475c7f;
+	border: none; 
+	border-radius: 5px;
+	color: #FFF;
+	padding: 4px 10px 4px 10px; 
+	margin: 0 3px; 
+	font: normal 14px 'Open Sans',sans-serif;
+	width: 50%;
+}
+div.ucrjphp_finish > p > input:hover {
+	color: #fff;
+	background: #4f6488;
+	text-decoration: none;
 }
