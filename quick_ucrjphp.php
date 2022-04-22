@@ -335,13 +335,13 @@ else{
 
 		// Counter
 		$counter = 0;
-		if(file_exists("$cache_path/ucrjphp_tmp/counter.txt")){
-			$myfile = fopen("$cache_path/ucrjphp_tmp/counter.txt", "r") or die("Unable to open file!");
-			$counter = fread($myfile,filesize("$cache_path/ucrjphp_tmp/counter.txt"));
+		if(file_exists("$upload_path/ucrjphp/counter.txt")){
+			$myfile = fopen("$upload_path/ucrjphp/counter.txt", "r") or die("Unable to open file!");
+			$counter = fread($myfile,filesize("$upload_path/ucrjphp/counter.txt"));
 			fclose($myfile);
 		}
 		$counter++;
-		$myfile = fopen("$cache_path/ucrjphp_tmp/counter.txt", "w") or die("Unable to open file!");
+		$myfile = fopen("$upload_path/ucrjphp/counter.txt", "w") or die("Unable to open file!");
 		fwrite($myfile, $counter);
 		fclose($myfile);
 

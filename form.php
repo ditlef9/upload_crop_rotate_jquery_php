@@ -292,8 +292,6 @@ echo"
 				var imageCounter = uploadedImageSrc.split('/').reverse()[1];
 				\$('[name=\"inp_ucrjphp_image_counter\"]').val(imageCounter);
 
-				// Version
-				\$('[name=\"inp_ucrjphp_image_version\"]').val(0);
 
 
 				// Get width, height, max_temp_width, max_temp_height, target_width, target_height
@@ -538,8 +536,6 @@ echo"
 
 				// Display tools
 				\$(\".ucrjphp_image_tools\").show();
-				\$('[name=\"inp_ucrjphp_image_version\"]').val(0);
-
 
 			}
 		});
